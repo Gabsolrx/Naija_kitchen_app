@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --font-poppins: "Poppins", sans-serif;
+  
+  --color-brand-blue: #0A2463;
+  --color-brand-yellow: #FFB703;
+  --color-brand-orange: #FB8500;
+  --color-brand-cream: #FFFBED;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-poppins);
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+

@@ -1,0 +1,8 @@
+{
+	"appId": "com.naijakitchen.app",
+	"appName": "NaijaKitchen",
+	"webDir": "dist",
+	"plugins": {
+		"AdMob": {}
+	}
+}
