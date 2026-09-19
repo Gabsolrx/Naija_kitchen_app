@@ -16,7 +16,7 @@ export function AdminRecipeForm() {
 
   const [formData, setFormData] = useState<Partial<Recipe>>({
     name: '',
-    category: 'Soups',
+    category: 'Soup',
     description: '',
     imageUrl: '',
     preparationTime: 15,
@@ -281,8 +281,8 @@ export function AdminRecipeForm() {
 
           <div className="flex flex-col gap-2">
             <label className="text-sm font-bold text-gray-700">Category</label>
-            <select value={formData.category || 'Soups'} onChange={e => handleChange('category', e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl">
-              {['Soups', 'Swallows', 'Rice', 'Beans', 'Yam', 'Snacks', 'Drinks', 'Breakfast'].map(c => <option key={c} value={c}>{c}</option>)}
+            <select value={formData.category || 'Soup'} onChange={e => handleChange('category', e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl">
+              {['Soup', 'Swallows', 'Rice', 'Stew', 'Quick Meals', 'Beans', 'Yam', 'Snacks', 'Drinks', 'Breakfast'].map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
 

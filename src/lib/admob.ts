@@ -23,6 +23,9 @@ export const initializeAdMob = async () => {
   }
 };
 
+let interstitialCounter = 0;
+const INTERSTITIAL_FREQUENCY = 3; // Show interstitial every 3 requests
+
 export const AdMobService = {
   showBanner: async () => {
     if (!Capacitor.isNativePlatform()) return;
@@ -31,7 +34,7 @@ export const AdMobService = {
         adId: ADMOB_CONFIG.BANNER_AD_UNIT_ID,
         adSize: BannerAdSize.BANNER,
         position: BannerAdPosition.BOTTOM_CENTER,
-        margin: 50, // Move it up if you have bottom navigation
+        margin: 58, // Bottom nav is 48px (h-12) + safe area padding
         isTesting: true // Remove in production
       };
       await AdMob.showBanner(options);
@@ -39,12 +42,21 @@ export const AdMobService = {
       console.error('Banner error', e);
     }
   },
-
   hideBanner: async () => {
     if (!Capacitor.isNativePlatform()) return;
     try {
       await AdMob.hideBanner();
     } catch (e) {}
+  },
+  
+  showInterstitialWithCap: async (): Promise<boolean> => {
+    interstitialCounter++;
+    if (interstitialCounter % INTERSTITIAL_FREQUENCY !== 0) {
+      console.log(`[AdMob] Skipping interstitial (${interstitialCounter}/${INTERSTITIAL_FREQUENCY})`);
+      return false;
+    }
+    await AdMobService.showInterstitial();
+    return true;
   },
 
   showInterstitial: async (): Promise<void> => {
@@ -58,25 +70,22 @@ export const AdMobService = {
           };
           await AdMob.prepareInterstitial(options);
           await AdMob.showInterstitial();
-          // Ideally listen to events for dismissal, but resolving here for simplicity
           resolve(); 
         } catch (e) {
           console.error(e);
           resolve();
         }
       } else {
-        // Web Simulation
         setTimeout(() => {
           resolve();
         }, 300);
       }
     });
   },
-
   showRewarded: async (onProgress?: (progress: number) => void): Promise<boolean> => {
     return new Promise(async (resolve) => {
       console.log(`[AdMob] Showing Rewarded`);
-      if (Capacitor.isNativePlatform()) {
+      if (Capacitor.isNativePlatform()) { 
          try {
            const options = {
              adId: ADMOB_CONFIG.REWARDED_AD_UNIT_ID,
@@ -84,9 +93,8 @@ export const AdMobService = {
            };
            await AdMob.prepareRewardVideoAd(options);
            await AdMob.showRewardVideoAd();
-           // Simplified for boilerplate. In real app, listen to RewardVideoPluginEvents.Rewarded
            resolve(true); 
-         } catch (e) {
+          } catch (e) {
            resolve(false);
          }
       } else {

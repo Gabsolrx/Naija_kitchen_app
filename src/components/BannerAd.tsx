@@ -18,13 +18,13 @@ export function BannerAd() {
   }, []);
 
   // Only show the placeholder DOM if we are NOT on a native platform.
-  // The native platform overlays the ad over the webview.
+  // The native platform overlays the ad over the webview, so we return an empty spacer
   if (Capacitor.isNativePlatform()) {
-    return <div className="w-full shrink-0" style={{ height: '50px' }} />;
+    return <div className="w-full shrink-0" style={{ height: '60px' }} />;
   }
 
   return (
-    <div className="w-full bg-gray-100 border-t border-gray-200 flex flex-col items-center justify-center shrink-0" style={{ height: '50px' }}>
+    <div className="w-full bg-gray-100 border-t border-gray-200 flex flex-col items-center justify-center shrink-0" style={{ height: '60px' }}>
       <span className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-1">Advertisement</span>
       <span className="text-[10px] text-gray-400">AdMob Banner ({ADMOB_CONFIG.BANNER_AD_UNIT_ID})</span>
     </div>

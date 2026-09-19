@@ -77,10 +77,10 @@ export default function App() {
       </div>
 
       {/* Global Bottom Elements */}
-      {!hideBottomNav && <BottomNav />}
-      
-      {/* Permanent AdMob Banner Placeholder at the bottom of the screen */}
+      {/* Permanent AdMob Banner Placeholder above the bottom nav */}
       {!location.pathname.startsWith('/admin') && <BannerAd />}
+      
+      {!hideBottomNav && <BottomNav />}
     </div>
   );
 }

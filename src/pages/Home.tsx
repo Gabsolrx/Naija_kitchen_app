@@ -3,7 +3,7 @@ import { TopBar } from '../components/TopBar';
 import { RecipeCard } from '../components/RecipeCard';
 import { useAppContext } from '../context/AppContext';
 
-const CATEGORIES = ["All", "Swallows", "Soup", "Rice", "Stew", "Breakfast", "Drinks", "Snacks"];
+const CATEGORIES = ["All", "Swallows", "Soup", "Rice", "Stew", "Quick Meals", "Breakfast", "Drinks", "Snacks"];
 
 export function Home() {
   const { recipes } = useAppContext();
