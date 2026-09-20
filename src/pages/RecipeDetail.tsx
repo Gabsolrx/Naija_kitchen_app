@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Users, Flame, ChevronRight, Download } from 'lucide-react';
 import { TopBar } from '../components/TopBar';
@@ -12,10 +12,16 @@ export function RecipeDetail() {
   const navigate = useNavigate();
   const { recipes, isFavorite, toggleFavorite, startTimer, isOfflineAvailable } = useAppContext();
   const [activeTab, setActiveTab] = useState<'ingredients' | 'instructions'>('ingredients');
+  const [isNavigatingNext, setIsNavigatingNext] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setActiveTab('ingredients');
+    setIsNavigatingNext(false);
   }, [id]);
 
   const recipe = recipes.find(r => r && r.id === id);
@@ -28,6 +34,8 @@ export function RecipeDetail() {
   const offline = isOfflineAvailable(recipe.id);
 
   const handleNextRecipe = async () => {
+    if (isNavigatingNext) return;
+    setIsNavigatingNext(true);
     try {
       // Find recipes in the same category
       let candidates = recipes.filter(r => r && r.category === recipe.category);
@@ -43,11 +51,14 @@ export function RecipeDetail() {
       const nextRecipe = candidates[(safeIndex + 1) % candidates.length];
       
       if (nextRecipe) {
+        // Interstitial ad triggers 100% of the time when Next Recipe is clicked
         await AdMobService.showInterstitial();
         navigate(`/recipe/${nextRecipe.id}`, { replace: true });
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsNavigatingNext(false);
     }
   };
 
@@ -77,7 +88,7 @@ export function RecipeDetail() {
         onShare={handleShare}
       />
       
-      <div className="flex-1 overflow-y-auto pb-safe">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pb-4">
         {/* Header Image */}
         <div className="h-72 w-full relative">
           <img src={recipe.imageUrl || undefined} alt={recipe.name} className="w-full h-full object-cover" />
@@ -185,14 +196,25 @@ export function RecipeDetail() {
               </div>
             )}
           </div>
-
-          <button 
-            onClick={handleNextRecipe}
-            className="w-full mt-8 py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-lg shadow-gray-900/20"
-          >
-            Next Recipe <ChevronRight size={20} />
-          </button>
         </div>
+      </div>
+
+      {/* Next Recipe Action Bar (Positioned directly above the banner ad) */}
+      <div className="px-5 py-3 bg-white/95 backdrop-blur-sm border-t border-gray-100 shrink-0 z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.04)]">
+        <button 
+          onClick={handleNextRecipe}
+          disabled={isNavigatingNext}
+          className={cn(
+            "w-full py-3.5 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md shadow-gray-900/20 text-base",
+            isNavigatingNext && "opacity-70 cursor-not-allowed"
+          )}
+        >
+          {isNavigatingNext ? "Loading Next Recipe..." : (
+            <>
+              Next Recipe <ChevronRight size={20} />
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

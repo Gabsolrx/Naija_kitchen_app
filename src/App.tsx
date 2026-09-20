@@ -18,6 +18,7 @@ import { AdminApp } from './pages/admin/AdminApp';
 import { useAppContext } from './context/AppContext';
 import { BottomNav } from './components/BottomNav';
 import { BannerAd } from './components/BannerAd';
+import { WebInterstitialAd } from './components/WebInterstitialAd';
 import { WifiOff } from 'lucide-react';
 
 export default function App() {
@@ -77,10 +78,15 @@ export default function App() {
       </div>
 
       {/* Global Bottom Elements */}
-      {/* Permanent AdMob Banner Placeholder above the bottom nav */}
-      {!location.pathname.startsWith('/admin') && <BannerAd />}
+      {/* Permanent AdMob Banner Placeholder above the bottom nav (or at bottom on recipe pages) */}
+      {!location.pathname.startsWith('/admin') && (
+        <BannerAd isRecipePage={location.pathname.startsWith('/recipe/')} />
+      )}
       
       {!hideBottomNav && <BottomNav />}
+
+      {/* Interactive AdMob Interstitial Simulator (for Web/Preview mode) */}
+      <WebInterstitialAd />
     </div>
   );
 }

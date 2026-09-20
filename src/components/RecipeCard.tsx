@@ -15,6 +15,7 @@ interface RecipeCardProps {
 export function RecipeCard({ recipe, featured }: RecipeCardProps) {
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite, isOfflineAvailable } = useAppContext();
+  const [isNavigating, setIsNavigating] = React.useState(false);
   
   if (!recipe) return null;
   const favorite = isFavorite(recipe.id);
@@ -28,8 +29,14 @@ export function RecipeCard({ recipe, featured }: RecipeCardProps) {
 
   const handleNavigate = async (e: React.MouseEvent) => {
     e.preventDefault();
-    await AdMobService.showInterstitialWithCap();
-    navigate(`/recipe/${recipe.id}`);
+    if (isNavigating) return;
+    setIsNavigating(true);
+    try {
+      await AdMobService.showInterstitialWithCap();
+      navigate(`/recipe/${recipe.id}`);
+    } finally {
+      setIsNavigating(false);
+    }
   };
 
   if (featured) {

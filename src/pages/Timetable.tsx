@@ -3,9 +3,11 @@ import { TopBar } from '../components/TopBar';
 import { useAppContext } from '../context/AppContext';
 
 import { Calendar, ChevronRight, RefreshCw, Sparkles, Trash2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AdMobService } from '../lib/admob';
 
 export function Timetable() {
+  const navigate = useNavigate();
   const { recipes, timetable, updateTimetable } = useAppContext();
   const [activeDay, setActiveDay] = useState(1);
   const [editingMeal, setEditingMeal] = useState<'breakfast'|'lunch'|'dinner'|null>(null);
@@ -146,18 +148,23 @@ export function Timetable() {
                 </div>
                 
                 {recipe ? (
-                  <Link to={`/recipe/${recipe.id}`} className="flex gap-3 active:scale-[0.98] transition-transform">
+                  <div 
+                    onClick={async () => {
+                      await AdMobService.showInterstitialWithCap();
+                      navigate(`/recipe/${recipe.id}`);
+                    }} 
+                    className="flex gap-3 active:scale-[0.98] transition-transform cursor-pointer"
+                  >
                     <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-gray-100">
                       <img src={recipe.imageUrl || undefined} alt={recipe.name} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 flex items-center justify-between min-w-0">
                       <div className="pr-2">
                         <p className="font-semibold text-gray-900 text-sm line-clamp-2">{recipe.name}</p>
-                        
                       </div>
                       <ChevronRight className="text-gray-300 shrink-0" size={20} />
                     </div>
-                  </Link>
+                  </div>
                 ) : currentPlan[meal] ? (
                   <div className="flex gap-3 items-center">
                     <div className="w-16 h-16 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 border border-gray-100">
